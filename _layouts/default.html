@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'zh-CN' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ site.title }}{% if site.description %} | {{ site.description }}{% endif %}</title>
+    <meta name="description" content="{{ site.description }}">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    <style>
+      .site-title {
+        margin-bottom: 0.6em;
+      }
+      .site-title .en-name {
+        font-size: 0.42em;
+        font-weight: 400;
+        color: #57606a;
+        letter-spacing: 0.04em;
+        margin-left: 0.35em;
+        vertical-align: 0.08em;
+      }
+      @media (prefers-color-scheme: dark) {
+        .site-title .en-name {
+          color: #8b949e;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <h1 class="site-title">彭云 <span class="en-name">waynepeng</span></h1>
+      {{ content }}
+    </div>
+  </body>
+</html>

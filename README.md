@@ -1,8 +1,6 @@
 <p align="center">
-  <img src="assets/selfshow.jpg" width="180" alt="WaynePen" />
+  <img src="assets/selfshow.jpg" width="180" alt="彭云" />
 </p>
-
-# 彭云 · WaynePen
 
 ### AI 算法与全栈工程师 ｜ 京东 / 腾讯 · 大模型应用 · 数字人 · 3D 视觉
 
