@@ -138,17 +138,15 @@
 | 物理仿真与动作生成 | [ProtoMotions](https://github.com/pengyun1314123/ProtoMotions) · [ppf-contact-solver](https://github.com/pengyun1314123/ppf-contact-solver) |
 | AI 工程实践 | [AIGuide](https://github.com/pengyun1314123/AIGuide) · [llama-cookbook](https://github.com/pengyun1314123/llama-cookbook) |
 
-常用工具片段：
-
-```bash
-git clone https://chromium.googlesource.com/libyuv/libyuv
-```
-
 ## 联系
 
 - **GitHub**：[@pengyun1314123](https://github.com/pengyun1314123) — 最方便，欢迎提 Issue 或直接交流。
 - **邮箱 / 微信 / LinkedIn**：待补充（补上后可直接展示在这里）。
 - **欢迎交流**：大模型应用、Agent / Skill、数字人方案、3D 重建与 AIGC 落地。目前在京东做算法工程，也很乐意聊聊 AI 编程带来的新可能。
+
+## 近期动态
+
+近期我在做大量小应用。在 AI 的助力下，我感觉自己无比强大；待后续部署到云端服务后会陆续开放，敬请期待。
 
 <p align="center">
   <a href="https://github.com/pengyun1314123">
