@@ -8,11 +8,11 @@
 
 **把算法做成能跑、能落地、能交付的系统。** 从空间数据与实时渲染出发，走到 3D 人体重建、数字人驱动，再到 LLM / ASR / TTS 与多模态生成。
 
-[![Tencent](https://img.shields.io/badge/Tencent-0052D9?style=for-the-badge&logoColor=white)](https://github.com/pengyun1314123)
-[![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Location: Beijing](https://img.shields.io/badge/Location-Beijing-2EA44F?style=for-the-badge)](https://github.com/pengyun1314123)
+[![Tencent](assets/badges/tencent.svg)](https://github.com/pengyun1314123)
+[![C++](assets/badges/cpp.svg)](https://isocpp.org/)
+[![Python](assets/badges/python.svg)](https://www.python.org/)
+[![PyTorch](assets/badges/pytorch.svg)](https://pytorch.org/)
+[![Location: Beijing](assets/badges/location.svg)](https://github.com/pengyun1314123)
 
 [关于我](#关于我) · [能力矩阵](#能力矩阵) · [技术栈](#技术栈) · [经历脉络](#经历脉络) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
 
@@ -149,6 +149,6 @@ git clone https://chromium.googlesource.com/libyuv/libyuv
 
 <div align="center">
 
-[![GitHub stats](https://github-readme-stats.vercel.app/api?username=pengyun1314123&show_icons=true&theme=github_dark&hide_border=true&count_private=false)](https://github.com/pengyun1314123)
+[![GitHub stats](assets/badges/github-stats.svg)](https://github.com/pengyun1314123)
 
 </div>
