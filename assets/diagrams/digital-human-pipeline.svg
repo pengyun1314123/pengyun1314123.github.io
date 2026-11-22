@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-label="数字人实时交互链路">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#58a6ff"/>
+    </marker>
+  </defs>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#e6edf3" text-anchor="middle">
+    <g><rect x="230" y="20" width="440" height="46" rx="8" fill="#161b22" stroke="#30363d"/><text x="450" y="48">1  用户输入：语音 / 文本</text></g>
+    <g><rect x="230" y="86" width="440" height="46" rx="8" fill="#161b22" stroke="#30363d"/><text x="450" y="114">2  ASR 语音识别 → 文本（文本输入直达 LLM）</text></g>
+    <g><rect x="230" y="152" width="440" height="46" rx="8" fill="#161b22" stroke="#30363d"/><text x="450" y="180">3  LLM 对话理解与回复生成</text></g>
+    <g><rect x="230" y="218" width="440" height="46" rx="8" fill="#161b22" stroke="#30363d"/><text x="450" y="246">4  TTS 语音合成 + 情感 / 音素分析</text></g>
+    <g><rect x="230" y="284" width="440" height="46" rx="8" fill="#161b22" stroke="#30363d"/><text x="450" y="312">5  驱动：Audio2Lip / Audio2Expression / Audio2Motion</text></g>
+    <g><rect x="230" y="350" width="440" height="46" rx="8" fill="#161b22" stroke="#d29922"/><text x="450" y="378">6  时间线对齐 ArrangePrepare → 统一帧参数</text></g>
+    <g><rect x="230" y="416" width="440" height="46" rx="8" fill="#161b22" stroke="#3fb950"/><text x="450" y="444">7  渲染 → 合成音频 → MP4 / 实时流</text></g>
+  </g>
+  <g stroke="#58a6ff" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="450" y1="66" x2="450" y2="84"/>
+    <line x1="450" y1="132" x2="450" y2="150"/>
+    <line x1="450" y1="198" x2="450" y2="216"/>
+    <line x1="450" y1="264" x2="450" y2="282"/>
+    <line x1="450" y1="330" x2="450" y2="348"/>
+    <line x1="450" y1="396" x2="450" y2="414"/>
+  </g>
+</svg>
