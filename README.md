@@ -1,53 +1,154 @@
-# [彭云](https://github.com/pengyun1314123)
+<div align="center">
 
-## Tencent
+<img src="https://avatars.githubusercontent.com/u/7006537?v=4&s=160" width="150" alt="WaynePen" />
 
-## Main Focus
+# 彭云 · WaynePen
 
-3d Human reconstruct,Text2Video,Image2Human,Image2Motion etc...
+### AI 算法工程师 ｜ 3D 视觉 · 数字人 · 图形渲染 · 大模型应用
 
-## Self Introduce
+**把算法做成能跑、能落地、能交付的系统。** 从空间数据与实时渲染出发，走到 3D 人体重建、数字人驱动，再到 LLM / ASR / TTS 与多模态生成。
 
-专注于3d相关工作，从PBR渲染，物理模拟到视觉重建等相关工作。
+[![Tencent](https://img.shields.io/badge/Tencent-0052D9?style=for-the-badge&logoColor=white)](https://github.com/pengyun1314123)
+[![C++](https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Location: Beijing](https://img.shields.io/badge/Location-Beijing-2EA44F?style=for-the-badge)](https://github.com/pengyun1314123)
 
-一开始做GIS的大场景数据处理(google地球金字塔数据结构)，地面的shp数据处理到转换为3d建筑等。对3d多边形处理以及几何体构建等。同时也对2d空间上面的矢量进行渲染处理。
+[关于我](#关于我) · [能力矩阵](#能力矩阵) · [技术栈](#技术栈) · [经历脉络](#经历脉络) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
 
-渲染方面，涉及到方方面面，场景人物，等都有涉猎，主要是pc端上面，包括D3D,OpenGL等API。
+</div>
 
-后续转做移动端上面渲染，VR方面，借力Occulus 开源代码，研发自己的陀螺仪驱动逻辑，在通用手机上面实现旋转控制的稳定性。
+---
 
-在此阶段对手机性能分析，trace等有一定深入理解，将渲染模块控制在2MB以内，集成到手机app后相比使用unity等引擎包体积缩小几倍。
+## 关于我
 
-后转过去专注于3d数字人的处理。包括3d姿态估计，3d人体人脸头发服装重建等方面的工作，结合LLM，ASR，TTS等构建完全态3D数字人助手。
+我是一名偏工程落地的 AI 算法工程师，长期扎根 **3D 视觉与图形学**，近年的工作重心是 **3D / 2D 数字人**以及与大模型的结合。
 
-2d数字人方面从wav2lip,到后来的3d高斯数字人都有一定涉猎，说是2d，其实都有大量的3d先验知识和参数化处理在里面。
+- **现在**：围绕 3D 人体 / 人脸 / 头发 / 服装重建、姿态估计，结合 LLM、ASR、TTS 构建全栈数字人助手；同时跟进视频生成、3D Gaussian Splatting 与 AI 编程工具链。
+- **过去**：从 GIS 大场景空间数据（Google Earth 金字塔瓦片、shp 数据转 3D 建筑）起步，做多边形处理与几何体构建、2D 矢量渲染；随后深耕 PC 端 D3D / OpenGL 实时渲染、移动端与 VR 渲染。
+- **底层能力**：对图形管线、性能剖析与移动端包体控制有长期实操经验——曾将渲染模块压缩到 **2 MB 以内**，集成到 App 后相比 Unity 等引擎方案包体缩小数倍。
 
-Focus On 3D work.specially on Human 3d work. C++,Python
+一句话定位：**连通「数据 → 几何 → 渲染 → 感知 → 生成 → 交互」全链路的人**。
 
-## Contact With Me
+## 能力矩阵
 
-如果需要交流可以和我联系，3d相关的人生阅历还是很丰富的。现在AI编程大行其道。感觉能力边界有了质的扩展。
+| 方向 | 我能做什么 | 关键词 |
+| --- | --- | --- |
+| AI 算法与大模型 | 大模型推理 / 微调 / Agent 应用落地，语音与语言模型接入业务系统 | LLM · VLM · RAG · ASR · TTS |
+| 视频与多模态生成 | 文本 / 图像到视频、音频驱动的人像动画，关注可控性与一致性 | Text2Video · Image2Human · Image2Motion |
+| 3D 视觉与人体理解 | 单目 / 多视角姿态估计，人体、人脸、毛发、服装的重建与参数化 | 3D Pose · Human Mesh · Avatar |
+| 图形渲染与物理模拟 | PBR 渲染、布料 / 接触求解、实时场景与角色渲染 | D3D · OpenGL · PBR · Simulation |
+| 移动端与 VR | 陀螺仪驱动的稳定旋转控制，移动端性能分析与 trace 调优 | VR · Gyro · Perf Trace · Android |
+| 数据工程与工具链 | 大规模空间数据金字塔、矢量数据处理、C++ / Python 工程化 | GIS · shp · C++ · Python · UE |
 
-some useful codes for better work with ue.
+## 技术栈
 
-Current Main Digital Human Interact Process
+| 类别 | 主要使用 |
+| --- | --- |
+| 语言 | `C++` `Python` `GLSL` `CUDA` |
+| AI / 算法 | `PyTorch` `Jittor` `TensorRT` `Transformer` `Diffusion` |
+| 3D / 渲染 | `OpenGL` `Direct3D` `Unreal Engine` `glTF` `3D Gaussian Splatting` |
+| 数据 / 工程 | `Git` `Linux` `Docker` `Redis` `GIS / 空间数据` |
+
+## 经历脉络
+
+按时间顺序，我的技术领域是这样一层层叠上去的：
+
+<details>
+<summary>展开查看完整经历细节</summary>
+
+**阶段一 · 空间数据与几何基础**
+
+- 处理 Google Earth 金字塔结构的大场景数据，完成 shp 等矢量数据到 3D 建筑的转换。
+- 积累 3D 多边形处理、几何体构建与 2D 空间矢量渲染的经验。
+
+**阶段二 · PC 端实时渲染**
+
+- 覆盖场景与角色的渲染全流程，主要基于 D3D / OpenGL。
+- 涉猎 PBR 材质、光照与物理模拟，建立图形学底层心智模型。
+
+**阶段三 · 移动端与 VR**
+
+- 借助 Oculus 开源代码自研陀螺仪驱动逻辑，在通用手机上实现稳定的旋转控制。
+- 深入手机性能分析与 trace 调优，将渲染模块控制在 **2 MB 以内**，相较 Unity 等引擎方案包体缩小数倍。
+
+**阶段四 · 3D 数字人与多模态交互**
+
+- 主攻 3D 姿态估计，以及人体、人脸、头发、服装的重建。
+- 结合 LLM、ASR、TTS 构建完整的 3D 数字人助手；2D 方向从 wav2lip 到 3D 高斯数字人均有实践——所谓「2D」，背后其实有大量 3D 先验与参数化方法。
+
+**阶段五 · AI 编程与能力边界扩展**
+
+- AI 编程工具成熟后，个人能力边界得到质的扩展：更快地跨领域验证想法、把算法原型推进到可运行系统。
+
+</details>
+
+从数据到交互，我关注的能力链条：
+
 ```mermaid
-sequenceDiagram
-UserInput->>ASR :  Vocie To Text
-ASR->>LLM : Interact Dialog
-UserInput->>LLM : Input Text Dialog
-LLM->>TTS: Answer: Text 2 Speech
-TTS->>Audio2Lip: Audio 2 Lip params
-TTS->>Audio2Expression: Feeling analysis To Expressions
-TTS->>Audio2Motion: Audio Transform to Motion
-Audio2Lip->>GroupedFrame: ArrangePrepare
-Audio2Expression->>GroupedFrame: ArrangePrepare
-Audio2Motion->>GroupedFrame: ArrangePrepare
-GroupedFrame->>Renderer: Render Frame To Image
-Renderer->>VideoEncode: Add Audio,encode to Mp4
+flowchart LR
+    A["空间数据<br/>GIS · shp · 瓦片金字塔"] --> B["几何与资产<br/>多边形 · 网格 · glTF"]
+    B --> C["渲染引擎<br/>D3D / OpenGL / UE / 移动端"]
+    C --> D["3D 理解与重建<br/>姿态 · 人体 · 人脸 · 服装"]
+    D --> E["生成与交互<br/>LLM · ASR · TTS · 视频生成"]
+    E --> F["可交付系统<br/>数字人助手 · 实时交互"]
 ```
 
-Image/Video to 3d assets,make benifit of this assets is my main point.
+## 代表系统：数字人实时交互链路
 
+这是我正在推进的交互主流程：用户输入可以是语音或文本，模型输出不止是文字，还携带表情、口型与动作参数，最后统一编排成帧并由渲染器输出视频或实时流。
 
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant ASR as 语音识别
+    participant LLM as 大模型
+    participant TTS as 语音合成
+    participant D as 驱动模块
+    participant R as 渲染器
+    participant E as 编码 / 推流
+
+    U->>ASR: 语音输入 → 文本
+    U->>LLM: 文本输入
+    ASR->>LLM: 识别结果
+    LLM->>TTS: 回复文本
+    TTS->>D: 音频 + 情感 / 音素分析
+    D->>D: Audio2Lip / Audio2Expression / Audio2Motion
+    D->>R: 对齐后的帧参数
+    R->>E: 渲染帧序列
+    E->>U: 合成音频 → MP4 / 实时流
+```
+
+这个链路里最值得投入的地方，是把**音频、表情、动作、渲染**四条时间线对齐——也就是上面 `ArrangePrepare` 那一步；它决定了数字人是「能说话的贴图」还是「可信的角色」。
+
+## 关注方向与技术雷达
+
+以下是公开开源项目的**跟踪 / 复现仓库，并非本人原创**，列在这里是为了说明我持续投入的技术方向，方便按图索骥交流。
+
+| 方向 | 跟踪的开源实现 |
+| --- | --- |
+| 3D Gaussian Splatting | [spark](https://github.com/pengyun1314123/spark) · [gsplat](https://github.com/pengyun1314123/gsplat) · [supersplat](https://github.com/pengyun1314123/supersplat) |
+| 视频生成 | [Wan2.2](https://github.com/pengyun1314123/Wan2.2) · [seedance2-comfyui](https://github.com/pengyun1314123/seedance2-comfyui) |
+| 数字人 / 头像驱动 | [LiveAvatar](https://github.com/pengyun1314123/LiveAvatar) · [FlashAvatar-code](https://github.com/pengyun1314123/FlashAvatar-code) · [opentalking](https://github.com/pengyun1314123/opentalking) · [LiveTalking](https://github.com/pengyun1314123/LiveTalking) |
+| 人体重建与姿态估计 | [Multi-RoI](https://github.com/pengyun1314123/Multi-RoI) · [FMPose3D](https://github.com/pengyun1314123/FMPose3D) · [LAM](https://github.com/pengyun1314123/LAM) |
+| 大模型推理与 Agent | [vllm](https://github.com/pengyun1314123/vllm) · [minimind](https://github.com/pengyun1314123/minimind) · [awesome-llm-apps](https://github.com/pengyun1314123/awesome-llm-apps) |
+| 物理仿真与动作生成 | [ProtoMotions](https://github.com/pengyun1314123/ProtoMotions) · [ppf-contact-solver](https://github.com/pengyun1314123/ppf-contact-solver) |
+| AI 工程实践 | [AIGuide](https://github.com/pengyun1314123/AIGuide) · [llama-cookbook](https://github.com/pengyun1314123/llama-cookbook) |
+
+常用工具片段：
+
+```bash
 git clone https://chromium.googlesource.com/libyuv/libyuv
+```
+
+## 联系
+
+- **GitHub**：[@pengyun1314123](https://github.com/pengyun1314123) — 最方便，欢迎提 Issue 或直接交流。
+- **邮箱 / 微信 / LinkedIn**：待补充（补上后可直接展示在这里）。
+- **欢迎交流**：3D 重建、数字人方案、AI 应用落地、渲染性能问题。3D 这条路上阅历比较丰富；现在 AI 编程大行其道，也很乐意聊聊它带来的新可能。
+
+<div align="center">
+
+[![GitHub stats](https://github-readme-stats.vercel.app/api?username=pengyun1314123&show_icons=true&theme=github_dark&hide_border=true&count_private=false)](https://github.com/pengyun1314123)
+
+</div>
