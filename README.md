@@ -1,6 +1,6 @@
-<div align="center">
-
-<img src="https://avatars.githubusercontent.com/u/7006537?v=4&s=160" width="150" alt="WaynePen" />
+<p align="center">
+  <img src="https://avatars.githubusercontent.com/u/7006537?v=4&s=160" width="150" alt="WaynePen" />
+</p>
 
 # 彭云 · WaynePen
 
@@ -15,8 +15,6 @@
 [![Location: Beijing](assets/badges/location.svg)](https://github.com/pengyun1314123)
 
 [关于我](#关于我) · [能力矩阵](#能力矩阵) · [技术栈](#技术栈) · [经历脉络](#经历脉络) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
-
-</div>
 
 ---
 
@@ -147,8 +145,8 @@ git clone https://chromium.googlesource.com/libyuv/libyuv
 - **邮箱 / 微信 / LinkedIn**：待补充（补上后可直接展示在这里）。
 - **欢迎交流**：3D 重建、数字人方案、AI 应用落地、渲染性能问题。3D 这条路上阅历比较丰富；现在 AI 编程大行其道，也很乐意聊聊它带来的新可能。
 
-<div align="center">
-
-[![GitHub stats](assets/badges/github-stats.svg)](https://github.com/pengyun1314123)
-
-</div>
+<p align="center">
+  <a href="https://github.com/pengyun1314123">
+    <img src="assets/badges/github-stats.svg" alt="GitHub stats for pengyun1314123" />
+  </a>
+</p>
