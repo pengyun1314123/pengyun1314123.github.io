@@ -119,17 +119,17 @@
 
 ## 关注方向与技术雷达
 
-以下是公开开源项目的**跟踪 / 复现仓库，并非本人原创**，列在这里是为了说明我持续投入的技术方向，方便按图索骥交流。
+以下是我持续跟踪与复现的开源实现，既有我自己整理 / fork 的仓库，也列出各方向当前最有代表性的上游项目，方便按图索骥交流。**这些均非本人原创**，列出只为说明我关注的技术方向。
 
-| 方向 | 跟踪的开源实现 |
-| --- | --- |
-| 3D Gaussian Splatting | [spark](https://github.com/pengyun1314123/spark) · [gsplat](https://github.com/pengyun1314123/gsplat) · [supersplat](https://github.com/pengyun1314123/supersplat) |
-| 视频生成 | [Wan2.2](https://github.com/pengyun1314123/Wan2.2) · [seedance2-comfyui](https://github.com/pengyun1314123/seedance2-comfyui) |
-| 数字人 / 头像驱动 | [LiveAvatar](https://github.com/pengyun1314123/LiveAvatar) · [FlashAvatar-code](https://github.com/pengyun1314123/FlashAvatar-code) · [opentalking](https://github.com/pengyun1314123/opentalking) · [LiveTalking](https://github.com/pengyun1314123/LiveTalking) |
-| 人体重建与姿态估计 | [Multi-RoI](https://github.com/pengyun1314123/Multi-RoI) · [FMPose3D](https://github.com/pengyun1314123/FMPose3D) · [LAM](https://github.com/pengyun1314123/LAM) |
-| 大模型推理与 Agent | [vllm](https://github.com/pengyun1314123/vllm) · [minimind](https://github.com/pengyun1314123/minimind) · [awesome-llm-apps](https://github.com/pengyun1314123/awesome-llm-apps) |
-| 物理仿真与动作生成 | [ProtoMotions](https://github.com/pengyun1314123/ProtoMotions) · [ppf-contact-solver](https://github.com/pengyun1314123/ppf-contact-solver) |
-| AI 工程实践 | [AIGuide](https://github.com/pengyun1314123/AIGuide) · [llama-cookbook](https://github.com/pengyun1314123/llama-cookbook) |
+| 方向 | 跟踪 / 复现的仓库 | 前沿上游项目 |
+| --- | --- | --- |
+| 3D Gaussian Splatting | [spark](https://github.com/pengyun1314123/spark) · [gsplat](https://github.com/pengyun1314123/gsplat) · [supersplat](https://github.com/pengyun1314123/supersplat) | [playcanvas/engine](https://github.com/playcanvas/engine) · [Open-DiffusionGS](https://github.com/caiyuanhao1998/Open-DiffusionGS) |
+| 视频生成 | [Wan2.2](https://github.com/pengyun1314123/Wan2.2) · [seedance2-comfyui](https://github.com/pengyun1314123/seedance2-comfyui) | [HunyuanVideo](https://github.com/Tencent-Hunyuan/HunyuanVideo) · [LongCat-Video](https://github.com/meituan-longcat/LongCat-Video) |
+| 数字人 / 头像驱动 | [LiveAvatar](https://github.com/pengyun1314123/LiveAvatar) · [FlashAvatar-code](https://github.com/pengyun1314123/FlashAvatar-code) · [opentalking](https://github.com/pengyun1314123/opentalking) · [LiveTalking](https://github.com/pengyun1314123/LiveTalking) | [InfiniteTalk](https://github.com/MeiGen-AI/InfiniteTalk) · [SoulX-FlashTalk](https://github.com/Soul-AILab/SoulX-FlashTalk) |
+| 人体重建与姿态估计 | [Multi-RoI](https://github.com/pengyun1314123/Multi-RoI) · [FMPose3D](https://github.com/pengyun1314123/FMPose3D) · [LAM](https://github.com/pengyun1314123/LAM) | [GVHMR](https://github.com/zju3dv/GVHMR) · [PromptHMR](https://github.com/yufu-wang/PromptHMR) |
+| 大模型推理与 Agent | [vllm](https://github.com/pengyun1314123/vllm) · [minimind](https://github.com/pengyun1314123/minimind) · [awesome-llm-apps](https://github.com/pengyun1314123/awesome-llm-apps) | [SGLang](https://github.com/sgl-project/sglang) · [MCP Servers](https://github.com/modelcontextprotocol/servers) |
+| 物理仿真与动作生成 | [ProtoMotions](https://github.com/pengyun1314123/ProtoMotions) · [ppf-contact-solver](https://github.com/pengyun1314123/ppf-contact-solver) | [Genesis](https://github.com/Genesis-Embodied-AI/Genesis) · [MuJoCo](https://github.com/google-deepmind/mujoco) |
+| AI 工程实践 | [AIGuide](https://github.com/pengyun1314123/AIGuide) · [llama-cookbook](https://github.com/pengyun1314123/llama-cookbook) | [Claude Code](https://github.com/anthropics/claude-code) · [OpenAI Codex](https://github.com/openai/codex) |
 
 ## 联系
 
