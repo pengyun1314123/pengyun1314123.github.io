@@ -136,7 +136,6 @@
 - **GitHub**：[@pengyun1314123](https://github.com/pengyun1314123) — 最方便，欢迎提 Issue 或直接交流。
 - **邮箱**：[pengyun1314123@126.com](mailto:pengyun1314123@126.com)
 - **微信**：pengyun1314123
-- **LinkedIn**：待补充（补上后可直接展示在这里）。
 - **欢迎交流**：大模型应用、Agent / Skill、数字人方案、3D 重建与 AIGC 落地。目前在京东做算法工程，也很乐意聊聊 AI 编程带来的新可能。
 
 ## 近期动态
