@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>03 · 训练数据全流程：从原始网页到可训练张量 · VLMTune</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2e;--line:#24304d;--text:#dbe4f5;--muted:#8fa0c0;
+--cyan:#22d3ee;--violet:#a78bfa;--green:#34d399;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+line-height:1.85;font-size:15px;}
+.doc-wrap{max-width:940px;margin:0 auto;padding:36px 28px 100px;}
+.back{display:inline-block;color:var(--cyan);text-decoration:none;font-size:13px;
+border:1px solid var(--line);padding:6px 14px;border-radius:8px;margin-bottom:28px;}
+.back:hover{background:#16203a}
+h1,h2,h3,h4,h5,h6{color:#fff;line-height:1.35;margin:34px 0 14px;}
+h1{font-size:30px;border-bottom:1px solid var(--line);padding-bottom:16px;}
+h2{font-size:23px;} h3{font-size:18px;} h4{font-size:16px;}
+p{margin:12px 0;color:#c7d3e8;}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0;}
+a{color:var(--cyan);}
+strong{color:#fff;}
+code{font-family:"SFMono-Regular",Consolas,Menlo,monospace;font-size:13px;
+background:#1a2540;color:#7dd3fc;padding:2px 6px;border-radius:4px;}
+pre{background:#0e1629;border:1px solid var(--line);border-radius:10px;
+padding:16px 18px;overflow-x:auto;line-height:1.6;}
+pre code{background:none;color:#b9c9e6;padding:0;font-size:12.5px;}
+blockquote{border-left:3px solid var(--cyan);background:rgba(34,211,238,.06);
+margin:16px 0;padding:10px 18px;color:#b6c8e4;border-radius:0 8px 8px 0;}
+ul,ol{padding-left:24px;color:#c7d3e8;} li{margin:6px 0;}
+.math-block{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);
+border-radius:8px;padding:12px 18px;margin:16px 0;overflow-x:auto;
+color:#ddd6fe;text-align:center;font-size:15px;}
+.table-wrap{overflow-x:auto;margin:18px 0;}
+table{border-collapse:collapse;width:100%;font-size:13px;}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;}
+th{background:#18223c;color:#fff;} tr:nth-child(even){background:rgba(255,255,255,.02)}
+@media(max-width:640px){.doc-wrap{padding:20px 16px 60px}h1{font-size:24px}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],
+displayMath:[['$$','$$'],['\\[','\\]']]}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="doc-wrap">
+<a class="back" href="../index.html#docs">← 返回 VLMTune 实验室</a>
+<h1>03 · 训练数据全流程：从原始网页到可训练张量</h1>
+<blockquote>本文档配套 <code>data/</code> 下的样例数据集，前端"数据流水线"页面会逐步展示每一阶段的<strong>输入 → 处理 → 产物（真实文件片段）</strong>。</blockquote>
+<hr>
+<h2>0. 全流程总览（12 个阶段）</h2>
+<pre><code>① 原始采集  ② 文本清洗  ③ 语言识别/质量过滤  ④ 去重  ⑤ 安全与去污染
+     ⑥ 分词(BPE)  ⑦ 数值化  ⑧ 序列打包(Packing)  ⑨ 构造 Labels
+          ⑩ Batch/Collator  ⑪ 训练 &amp; Checkpoint  ⑫ 评估(Perplexity)</code></pre>
+<p><strong>最重要的认知</strong>：<code>数据不是文件夹，而是一条可审计的流水线</code>。模型出问题，第一反应应该是回溯数据，而不是先改模型。</p>
+<hr>
+<h2>1. 样例数据集说明</h2>
+<p>本工程内置一个<strong> miniature（迷你）教学语料</strong> <code>data/raw_corpus.jsonl</code>，刻意加入了真实世界里的各种"脏数据"，方便观察每个阶段的清洗效果：</p>
+<div class="table-wrap"><table><thead><tr><th>编号</th><th>类型</th><th>故意埋设的问题</th><th>教学目的</th></tr></thead><tbody><tr><td>doc-001</td><td>网页正文</td><td>HTML 标签、导航残留、多余空白</td><td>演示清洗</td></tr><tr><td>doc-002</td><td>网页正文</td><td>正常高质量文本</td><td>对照样本</td></tr><tr><td>doc-003</td><td>网页正文</td><td>与 doc-002 完全重复</td><td>演示精确去重</td></tr><tr><td>doc-004</td><td>网页正文</td><td>与 doc-002 高度相似（仅改几个词）</td><td>演示 MinHash 近似去重</td></tr><tr><td>doc-005</td><td>论坛文本</td><td>包含邮箱、手机号</td><td>演示 PII 脱敏</td></tr><tr><td>doc-006</td><td>代码片段</td><td>中英混合、代码</td><td>演示语言识别与保留策略</td></tr><tr><td>doc-007</td><td>垃圾文本</td><td>极短、符号堆砌</td><td>演示质量过滤</td></tr><tr><td>doc-008</td><td>基准测试题</td><td>与验证集重合</td><td>演示 Benchmark 去污染</td></tr></tbody></table></div>
+<p>另有 <code>data/sft_instruct.jsonl</code>（指令微调样例）与 <code>data/multimodal_instruct.json</code>（多模态指令样例，LLaVA 风格），用于展示预训练之后的 SFT 与多模态阶段。</p>
+<hr>
+<h2>2. 逐阶段详解（输入 / 处理 / 产物）</h2>
+<h3>① 原始采集（Collection）</h3>
+<ul>
+<li><strong>输入</strong>：Common Crawl WARC / 书籍 / 代码仓库 / 维基百科（真实场景 PB 级）</li>
+<li><strong>处理</strong>：解析 HTML/PDF，抽取正文；打上 metadata（source、url、language、license）</li>
+<li><strong>产物</strong>：<code>raw_corpus.jsonl</code>，每行一个 JSON 对象：<code>{"id", "source", "text", "meta"}</code></li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre class="lang-json"><code>  {&quot;id&quot;:&quot;doc-001&quot;,&quot;source&quot;:&quot;web&quot;,&quot;text&quot;:&quot;&lt;html&gt;&lt;body&gt;&lt;div class=&#x27;nav&#x27;&gt;首页 | 登录&lt;/div&gt;&lt;p&gt;大模型  训练需要  大量  文本数据。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;,&quot;meta&quot;:{&quot;url&quot;:&quot;...&quot;}}</code></pre>
+<ul>
+<li><strong>要点</strong>：质量上限在这一步就被决定了。直接抽 WARC 正文通常优于用现成的 WET 文本（WET 含大量导航/页脚模板）。</li>
+</ul>
+<h3>② 文本清洗与规范化（Normalization）</h3>
+<ul>
+<li><strong>输入</strong>：上一步的 <code>text</code> 原始字符串</li>
+<li><strong>处理</strong>：去 HTML 标签 → Unicode 规范化（NFC）→ 压缩多余空白 → 去脚本/样式/cookie 横幅 → 统一引号破折号</li>
+<li><strong>产物</strong>：干净文本</li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre><code>  前: &lt;html&gt;&lt;body&gt;&lt;div class=&#x27;nav&#x27;&gt;首页 | 登录&lt;/div&gt;&lt;p&gt;大模型  训练需要  大量  文本数据。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+  后: 首页 | 登录
+  大模型 训练需要 大量 文本数据。</code></pre>
+<ul>
+<li><strong>要点</strong>：便宜的过滤器放前面，昂贵的（分类器、MinHash）放后面。</li>
+</ul>
+<h3>③ 语言识别与质量过滤（LangID + Quality Filter）</h3>
+<ul>
+<li><strong>输入</strong>：清洗后的文档</li>
+<li><strong>处理</strong>：fastText 语言识别；Gopher 启发式规则（文档长度、平均词长、符号/文字比例、重复行比例）；教育价值分类器（FineWeb-Edu 思路）</li>
+<li><strong>产物</strong>：<code>filtered_corpus.jsonl</code> + 过滤原因日志</li>
+<li><strong>样例</strong>：doc-007 因"文本长度 &lt; 50 且符号比例 &gt; 0.5"被丢弃，日志记录 <code>{"id":"doc-007","drop_reason":"low_quality: symbol_ratio=0.72"}</code></li>
+<li><strong>要点</strong>：过滤器会偏置数据分布，要定期抽样"被丢掉的内容"人工检查。</li>
+</ul>
+<h3>④ 去重（Deduplication）</h3>
+<ul>
+<li><strong>输入</strong>：过滤后的文档集合</li>
+<li><strong>处理</strong>：</li>
+<li>精确去重：对文档/段落做哈希（SHA1/MD5），相同哈希只留一份</li>
+<li>近似去重：<strong>MinHash + LSH</strong>——把文档转成 n-gram shingle 集合，用 MinHash 签名近似 Jaccard 相似度，LSH 分桶避免 O(n²) 两两比较</li>
+<li>行级去重：删除跨文档重复出现的导航行</li>
+<li><strong>产物</strong>：<code>deduped_corpus.jsonl</code> + 重复组报告</li>
+<li><strong>样例</strong>：doc-003（与 doc-002 完全相同）被精确去重删除；doc-004（相似度高）被 MinHash 判为近重复并删除。</li>
+<li><strong>数学</strong>：Jaccard 相似度</li>
+</ul>
+<div class="math-block">$$J(A,B)=\frac{|A\cap B|}{|A\cup B|},\quad \Pr[\min h(A)=\min h(B)] = J(A,B)$$</div>
+<ul>
+<li><strong>要点</strong>：重复数据会让模型对某些文本"多训几个 epoch"，放大记忆化和基准污染。通常能去掉网页数据的 30%–60%。</li>
+</ul>
+<h3>⑤ 安全、隐私与去污染（Safety / PII / Decontamination）</h3>
+<ul>
+<li><strong>输入</strong>：去重后的语料</li>
+<li><strong>处理</strong>：正则检测邮箱/电话/IP 并脱敏； toxicity 分类器；与验证集/基准做 n-gram 重叠检测</li>
+<li><strong>产物</strong>：<code>safe_corpus.jsonl</code></li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre><code>  前: 联系方式: alice@example.com, 电话 138-0000-1234
+  后: 联系方式: &lt;EMAIL&gt;, 电话 &lt;PHONE&gt;</code></pre>
+<p>doc-008 因与 benchmark 题目 13-gram 重叠被标记并移除。</p>
+<ul>
+<li><strong>要点</strong>：合规不是可选项。</li>
+</ul>
+<h3>⑥ 分词（Tokenization）</h3>
+<ul>
+<li><strong>输入</strong>：安全语料中的字符串</li>
+<li><strong>处理</strong>：BPE / SentencePiece 子词切分 → 词表映射</li>
+<li><strong>产物</strong>：token 序列（教学 demo 中展示切分结果与 ID）</li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre><code>  文本: The model is unfriendly.
+  BPE:  [&#x27;The&#x27;, &#x27;model&#x27;, &#x27;is&#x27;, &#x27;un&#x27;, &#x27;friend&#x27;, &#x27;ly&#x27;, &#x27;.&#x27;]
+  IDs:  [12, 573, 23, 891, 229, 48, 5]</code></pre>
+<ul>
+<li><strong>要点</strong>：子词分词解决 OOV 问题，词表通常 50k–150k。BPE 通过不断合并语料中最高频的相邻字符对来构建词表。</li>
+</ul>
+<h3>⑦ 数值化与注意力掩码（Numericalization）</h3>
+<ul>
+<li><strong>输入</strong>：token 列表</li>
+<li><strong>处理</strong>：token → ID；加特殊 token（BOS/EOS/PAD）；生成 attention_mask</li>
+<li><strong>产物</strong>：<code>input_ids</code>, <code>attention_mask</code></li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre class="lang-json"><code>  {&quot;input_ids&quot;:[1, 12, 573, ..., 2], &quot;attention_mask&quot;:[1,1,1,...,1]}</code></pre>
+<h3>⑧ 序列打包（Packing）</h3>
+<ul>
+<li><strong>输入</strong>：变长 token 序列</li>
+<li><strong>处理</strong>：把多条短文本用 EOS 拼接后切成长度恰好为 <code>seq_len</code>（如 2048/4096）的定长块</li>
+<li><strong>产物</strong>：定长张量，GPU 利用率大幅提升</li>
+<li><strong>样例</strong>：3 篇短文档（300 + 700 + 1100 tokens）→ 拼成一条 <code>len=2100</code> → 切成 <code>2048 + 52</code></li>
+<li><strong>要点</strong>：挤压 padding 浪费。<code>有效token预算 ≈ 名义预算 ×(1−重复率)×(1−padding率)×解析成功率×质量系数</code>。</li>
+</ul>
+<h3>⑨ 构造 Labels（因果 LM 的"练习题"）</h3>
+<ul>
+<li><strong>输入</strong>：<code>input_ids = [t₁, t₂, …, t_T]</code></li>
+<li><strong>处理</strong>：labels 就是 input_ids 右移一位；第一个位置用 −100 忽略（PyTorch cross_entropy 忽略 −100）</li>
+<li><strong>产物</strong>：<code>(input_ids, labels)</code> 对</li>
+<li><strong>样例</strong>：</li>
+</ul>
+<pre><code>  input_ids: [我, 今, 天, 学, 习, 大, 模, 型]
+  labels:    [-100, 今, 天, 学, 习, 大, 模, 型]
+  含义: 看到&quot;我&quot;预测&quot;今天&quot;，看到&quot;我今天&quot;预测&quot;学&quot;……一句话产生 T-1 个训练信号</code></pre>
+<ul>
+<li><strong>注意</strong>：多模态样本中，图像 token 位置与 prompt 位置的 labels 也设为 −100，只对回答部分计算 loss。</li>
+</ul>
+<h3>⑩ Batch 与 Collator</h3>
+<ul>
+<li><strong>输入</strong>：定长样本</li>
+<li><strong>处理</strong>：组 batch（如 batch_size=64）；动态 padding；构造 <code>position_ids</code></li>
+<li><strong>产物</strong>：<code>{"input_ids": [B, T], "attention_mask": [B, T], "labels": [B, T]}</code></li>
+<li><strong>要点</strong>：DataLoader 的吞吐决定 GPU 是否"饿着"。大规模训练用 Parquet 列存 + 流式 IterableDataset（FineWeb ~45TB 不可能全部读入内存）。</li>
+</ul>
+<h3>⑪ 训练与 Checkpoint</h3>
+<ul>
+<li><strong>输入</strong>：batch 张量</li>
+<li><strong>处理</strong>：forward → loss → backward → optimizer.step；混合精度、梯度累积、梯度检查点；定期存 checkpoint</li>
+<li><strong>产物</strong>：</li>
+<li><code>checkpoint-1000/</code>：<code>model.safetensors</code>（权重）、<code>optimizer.pt</code>、<code>scheduler.pt</code>、<code>config.json</code>、训练状态（step、loss 日志）</li>
+<li>LoRA 场景只存 <code>adapter_model.safetensors</code>（几十 MB）</li>
+<li><strong>要点</strong>：checkpoint 是"可恢复的训练快照"，断电/抢占后能接着训。</li>
+</ul>
+<h3>⑫ 评估（Perplexity）</h3>
+<div class="math-block">$$PPL = \exp\!\left(-\frac{1}{T}\sum_{t=1}^{T}\log P_\theta(x_t\mid x_{&lt;t})\right)$$</div>
+<ul>
+<li><strong>输入</strong>：留出集（held-out）</li>
+<li><strong>产物</strong>：loss 曲线、PPL 数值、下游任务指标</li>
+<li><strong>人话</strong>：PPL 可以理解为"模型在每个位置上平均在多少个词之间犹豫"，越低越好。</li>
+</ul>
+<hr>
+<h2>3. 预训练之后：SFT 与多模态数据</h2>
+<h3>3.1 SFT 指令数据（<code>data/sft_instruct.jsonl</code>）</h3>
+<p>格式（Alpaca 风格）：</p>
+<pre class="lang-json"><code>{&quot;instruction&quot;:&quot;把下面的话改写成礼貌用语&quot;,&quot;input&quot;:&quot;给我水&quot;,&quot;output&quot;:&quot;请给我一杯水，谢谢。&quot;}</code></pre>
+<p>训练时套上 chat 模板（如 ChatML / Llama-3 模板）：</p>
+<pre><code>&lt;|im_start|&gt;system
+你是一个有帮助的助手。&lt;|im_end|&gt;
+&lt;|im_start|&gt;user
+把下面的话改写成礼貌用语：给我水&lt;|im_end|&gt;
+&lt;|im_start|&gt;assistant
+请给我一杯水，谢谢。&lt;|im_end|&gt;</code></pre>
+<p><strong>只对 assistant 段计算 loss</strong>（模板和 user 段 labels = −100）。常见开源数据集：FLAN、Dolly 15K、OpenAssistant、ShareGPT；合成数据方法：Self-Instruct、Evol-Instruct（WizardLM）、Orca 推理链蒸馏。</p>
+<h3>3.2 多模态指令数据（<code>data/multimodal_instruct.json</code>）</h3>
+<p>LLaVA-Instruct-150K 风格：</p>
+<pre class="lang-json"><code>{
+  &quot;id&quot;: &quot;mm-001&quot;,
+  &quot;image&quot;: &quot;images/cat_on_sofa.jpg&quot;,
+  &quot;conversations&quot;: [
+    {&quot;from&quot;: &quot;human&quot;, &quot;value&quot;: &quot;&lt;image&gt;\n图里有什么？&quot;},
+    {&quot;from&quot;: &quot;gpt&quot;,   &quot;value&quot;: &quot;一只橘猫趴在沙发上。&quot;},
+    {&quot;from&quot;: &quot;human&quot;, &quot;value&quot;: &quot;它在做什么？&quot;},
+    {&quot;from&quot;: &quot;gpt&quot;,   &quot;value&quot;: &quot;它正闭着眼睛睡觉。&quot;}
+  ]
+}</code></pre>
+<p><strong>多模态数据流水线额外产物</strong>：</p>
+<div class="table-wrap"><table><thead><tr><th>阶段</th><th>产物</th><th>说明</th></tr></thead><tbody><tr><td>视觉编码</td><td><code>image_features [N, d_v]</code></td><td>ViT 输出的 patch 特征，N = (H/P)·(W/P)</td></tr><tr><td>投影对齐</td><td><code>image_embeds [N, d_l]</code></td><td>MLP 投影到 LLM 维度</td></tr><tr><td>序列拼接</td><td><code>input_embeds [N+M, d_l]</code></td><td>图像 token + 文本 token</td></tr><tr><td>训练掩码</td><td><code>labels</code></td><td>仅回答位置参与 loss</td></tr></tbody></table></div>
+<hr>
+<h2>4. 各阶段产物速查表</h2>
+<div class="table-wrap"><table><thead><tr><th>阶段</th><th>输入</th><th>输出（产物文件 / 张量）</th><th>关键指标</th></tr></thead><tbody><tr><td>采集</td><td>网页/书/代码</td><td><code>raw_corpus.jsonl</code></td><td>来源分布、字节量</td></tr><tr><td>清洗</td><td>原始文本</td><td>干净文本</td><td>保留率</td></tr><tr><td>过滤</td><td>干净文本</td><td><code>filtered_corpus.jsonl</code></td><td>各类过滤占比</td></tr><tr><td>去重</td><td>过滤文本</td><td><code>deduped_corpus.jsonl</code></td><td>重复率</td></tr><tr><td>安全</td><td>去重文本</td><td><code>safe_corpus.jsonl</code></td><td>PII/污染命中数</td></tr><tr><td>分词</td><td>字符串</td><td>token 列表</td><td>压缩率、词表覆盖率</td></tr><tr><td>打包</td><td>token 流</td><td><code>packed_2048.bin</code></td><td>padding 率</td></tr><tr><td>Labels</td><td>input_ids</td><td><code>(input_ids, labels)</code></td><td>有效监督 token 数</td></tr><tr><td>Batch</td><td>样本</td><td><code>[B,T]</code> 张量</td><td>吞吐 tokens/s</td></tr><tr><td>训练</td><td>batch</td><td><code>checkpoint-*</code></td><td>loss、显存占用</td></tr><tr><td>评估</td><td>留出集</td><td>PPL / 指标</td><td>PPL ↓</td></tr></tbody></table></div>
+</div>
+</body>
+</html>

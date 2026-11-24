@@ -1,0 +1,600 @@
+{
+  "stages": [
+    {
+      "id": 1,
+      "name": "原始采集",
+      "en": "Collection",
+      "input": "Common Crawl / 书籍 / 代码仓库等数据源",
+      "process": "解析 HTML/PDF，抽取正文， attach metadata (source, url, crawl)",
+      "output": "data/raw_corpus.jsonl",
+      "stats": {
+        "文档数": 8,
+        "来源分布": {
+          "web": 5,
+          "forum": 1,
+          "code": 1,
+          "benchmark": 1
+        }
+      },
+      "samples": [
+        {
+          "id": "doc-001",
+          "source": "web",
+          "text": "<html><body><div class='nav'>首页 | 登录 | 注册</div><p>大模型  训练需要  大量  文本数据。    数据质量决定模型能力的上限。</p><footer>© 2026 All rights reserved</footer></body></html>"
+        },
+        {
+          "id": "doc-002",
+          "source": "web",
+          "text": "Transformer 架构完全依赖注意力机制，摒弃了循环和卷积。它的并行计算能力使大规模预训练成为可能，现代大语言模型几乎都基于解码器-only 的 Transformer 变体构建。"
+        },
+        {
+          "id": "doc-003",
+          "source": "web",
+          "text": "Transformer 架构完全依赖注意力机制，摒弃了循环和卷积。它的并行计算能力使大规模预训练成为可能，现代大语言模型几乎都基于解码器-only 的 Transformer 变体构建。"
+        }
+      ],
+      "tip": "数据质量的上限在采集阶段就已决定；直接从 WARC 抽正文优于用现成 WET 文本。"
+    },
+    {
+      "id": 2,
+      "name": "文本清洗与规范化",
+      "en": "Normalization",
+      "input": "raw text (含 HTML 标签、多余空白)",
+      "process": "去 HTML → Unicode NFC → 压缩空白 → 去脚本/页脚模板",
+      "output": "cleaned_corpus (内存)",
+      "stats": {
+        "输入文档": 8,
+        "输出文档": 8,
+        "平均缩短字符": 11.5
+      },
+      "samples": [
+        {
+          "id": "doc-001",
+          "before": "<html><body><div class='nav'>首页 | 登录 | 注册</div><p>大模型  训练需要  大量  文本数据。    数据质量决定模型能力的上限。</p><footer>© 2026 All rights reserved</footer></body></html>",
+          "after": "首页 | 登录 | 注册 大模型 训练需要 大量 文本数据。 数据质量决定模型能力的上限。 © 2026 All rights reserved"
+        }
+      ],
+      "tip": "便宜的过滤器放前面，昂贵的分类器/MinHash 放后面。"
+    },
+    {
+      "id": 3,
+      "name": "语言识别与质量过滤",
+      "en": "LangID & Quality",
+      "input": "cleaned text",
+      "process": "fastText 语言识别 + Gopher 启发式规则 + 质量分类器",
+      "output": "filtered_corpus + 过滤日志",
+      "stats": {
+        "输入": 8,
+        "保留": 7,
+        "丢弃": 1,
+        "丢弃明细": [
+          {
+            "id": "doc-008",
+            "reason": "contaminated: benchmark_overlap",
+            "preview": "问题：下列哪一项不是 Transformer 的组成部分？A: 自注意力 B: 前馈网络 C: 卷积层 D: 层归一化。"
+          }
+        ]
+      },
+      "samples": [
+        {
+          "id": "doc-008",
+          "reason": "contaminated: benchmark_overlap"
+        }
+      ],
+      "tip": "过滤器会偏置分布；定期抽样被丢弃的内容做人工检查。"
+    },
+    {
+      "id": 4,
+      "name": "去重",
+      "en": "Deduplication",
+      "input": "filtered text",
+      "process": "SHA1 精确去重 + MinHash/LSH 近似去重 (Jaccard>0.65)",
+      "output": "deduped_corpus",
+      "stats": {
+        "输入": 7,
+        "精确重复": [
+          {
+            "id": "doc-003",
+            "duplicate_of": "doc-002"
+          }
+        ],
+        "近似重复": [],
+        "去重后": 6
+      },
+      "samples": [],
+      "formula": "Jaccard(A,B)=|A∩B|/|A∪B|;  Pr[min h(A)=min h(B)] = J(A,B)",
+      "tip": "重复数据会让模型对某些文本多训几个 epoch，放大记忆化与基准污染。"
+    },
+    {
+      "id": 5,
+      "name": "安全 / 隐私 / 去污染",
+      "en": "Safety & Decontamination",
+      "input": "deduped text",
+      "process": "正则 PII 脱敏 + toxicity 分类器 + 与验证集 n-gram 重叠检测",
+      "output": "safe_corpus",
+      "stats": {
+        "输入": 6,
+        "PII 命中": 1,
+        "输出": 6
+      },
+      "samples": [
+        {
+          "id": "doc-005",
+          "before": "关于微调的常见问题，可以联系我：alice@example.com，或者拨打 138-0000-1234。我会尽快回复大家的问题和疑问。",
+          "after": "关于微调的常见问题，可以联系我：<EMAIL>，或者拨打 <PHONE>。我会尽快回复大家的问题和疑问。"
+        }
+      ],
+      "tip": "合规不是可选项；去污染要在训练前完成，否则评估指标不可信。"
+    },
+    {
+      "id": 6,
+      "name": "分词 (BPE)",
+      "en": "Tokenization",
+      "input": "safe text",
+      "process": "Byte-Pair Encoding：反复合并语料中最高频的相邻字符对",
+      "output": "token 序列 + tokenizer.json",
+      "stats": {
+        "vocab_size": 257,
+        "merge_rules": 83,
+        "special_tokens": [
+          "<PAD>",
+          "<BOS>",
+          "<EOS>",
+          "<UNK>"
+        ]
+      },
+      "samples": [
+        {
+          "id": "doc-001",
+          "text": "首页 | 登录 | 注册 大模型 训练需要 大量 文本数据。 数据质量决定模型能力的上限。 © 2026 All rig",
+          "tokens": [
+            "首",
+            "页",
+            "</w>",
+            "|</w>",
+            "登",
+            "录",
+            "</w>",
+            "|</w>",
+            "注",
+            "册",
+            "</w>",
+            "大",
+            "模型",
+            "</w>",
+            "训练",
+            "需",
+            "要",
+            "</w>",
+            "大",
+            "量",
+            "</w>",
+            "文",
+            "本",
+            "数据",
+            "。</w>",
+            "数据",
+            "质",
+            "量",
+            "决",
+            "定"
+          ],
+          "ids": [
+            254,
+            251,
+            21,
+            78,
+            214,
+            166,
+            21,
+            78,
+            203,
+            121,
+            21,
+            139,
+            201,
+            21,
+            238,
+            250,
+            229,
+            21,
+            139,
+            246,
+            21,
+            182,
+            184,
+            181,
+            82,
+            181,
+            241,
+            246,
+            122,
+            151
+          ],
+          "merge_examples": [
+            [
+              "。",
+              "</w>",
+              "。</w>"
+            ],
+            [
+              "o",
+              "r",
+              "or"
+            ],
+            [
+              "e",
+              "r",
+              "er"
+            ],
+            [
+              "模",
+              "型",
+              "模型"
+            ],
+            [
+              "T",
+              "r",
+              "Tr"
+            ]
+          ]
+        },
+        {
+          "id": "doc-002",
+          "text": "Transformer 架构完全依赖注意力机制，摒弃了循环和卷积。它的并行计算能力使大规模预训练成为可能，现代大语言模型",
+          "tokens": [
+            "Transformer</w>",
+            "架构完全依赖注意力机制，",
+            "摒",
+            "弃了循环和卷积",
+            "。它的并行计算能力",
+            "使",
+            "大规模预训练成为可能，",
+            "现",
+            "代大语言模型",
+            "</w>"
+          ],
+          "ids": [
+            46,
+            198,
+            179,
+            164,
+            88,
+            117,
+            148,
+            212,
+            100,
+            21
+          ],
+          "merge_examples": [
+            [
+              "。",
+              "</w>",
+              "。</w>"
+            ],
+            [
+              "o",
+              "r",
+              "or"
+            ],
+            [
+              "e",
+              "r",
+              "er"
+            ],
+            [
+              "模",
+              "型",
+              "模型"
+            ],
+            [
+              "T",
+              "r",
+              "Tr"
+            ]
+          ]
+        }
+      ],
+      "tip": "子词分词解决 OOV；词表通常 50k–150k（教学 demo 用 300 方便观察）。"
+    },
+    {
+      "id": 7,
+      "name": "数值化与掩码",
+      "en": "Numericalization",
+      "input": "token 列表",
+      "process": "token→ID，加 BOS/EOS/PAD，生成 attention_mask",
+      "output": "input_ids, attention_mask",
+      "stats": {
+        "序列长度": 63,
+        "BOS_ID": 1,
+        "EOS_ID": 2
+      },
+      "samples": [
+        {
+          "input_ids": [
+            1,
+            254,
+            251,
+            21,
+            78,
+            214,
+            166,
+            21,
+            78,
+            203,
+            121,
+            21,
+            139,
+            201,
+            21,
+            238,
+            250,
+            229,
+            21,
+            139,
+            246,
+            21,
+            182,
+            184,
+            181,
+            82,
+            181,
+            241,
+            246,
+            122,
+            151,
+            201,
+            227,
+            215,
+            89,
+            249,
+            82,
+            80,
+            21,
+            16
+          ],
+          "attention_mask": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "tip": "attention_mask 告诉模型哪些位置是真实 token、哪些是 padding。"
+    },
+    {
+      "id": 8,
+      "name": "序列打包",
+      "en": "Sequence Packing",
+      "input": "变长 token 流",
+      "process": "拼接后用 EOS 分隔，切成固定长度 128 的块（真实为 2048/4096）",
+      "output": "packed_128.bin",
+      "stats": {
+        "总 token": 256,
+        "打包块数": 2,
+        "块长度": 128,
+        "padding 浪费": 0.0
+      },
+      "samples": [
+        {
+          "block_0_first_30": [
+            254,
+            251,
+            21,
+            78,
+            214,
+            166,
+            21,
+            78,
+            203,
+            121,
+            21,
+            139,
+            201,
+            21,
+            238,
+            250,
+            229,
+            21,
+            139,
+            246,
+            21,
+            182,
+            184,
+            181,
+            82,
+            181,
+            241,
+            246,
+            122,
+            151
+          ],
+          "block_len": 128
+        }
+      ],
+      "tip": "有效token预算 ≈ 名义预算 ×(1−重复率)×(1−padding率)×解析成功率×质量系数。"
+    },
+    {
+      "id": 9,
+      "name": "构造 Labels",
+      "en": "Label Construction",
+      "input": "input_ids",
+      "process": "labels = input_ids 右移一位，首位填 -100（交叉熵忽略）",
+      "output": "(input_ids, labels) 训练对",
+      "stats": {
+        "序列长度": 8,
+        "有效监督位置": 7
+      },
+      "samples": [
+        {
+          "input_ids": [
+            173,
+            3,
+            3,
+            3,
+            3,
+            139,
+            200,
+            136
+          ],
+          "labels": [
+            -100,
+            3,
+            3,
+            3,
+            3,
+            139,
+            200,
+            136
+          ],
+          "note": "看到「我」预测「今天」… 一句话产生 T-1 个训练信号"
+        }
+      ],
+      "tip": "多模态样本中，图像 token 与 prompt 位置的 labels 也设为 -100，只对回答算 loss。"
+    },
+    {
+      "id": 10,
+      "name": "Batch 与 Collator",
+      "en": "Batching",
+      "input": "定长样本",
+      "process": "组 batch、动态 padding、构造 position_ids；Parquet + IterableDataset 流式读取",
+      "output": "input_ids [B,T], attention_mask [B,T], labels [B,T]",
+      "stats": {
+        "batch_size": 2,
+        "seq_len": 128,
+        "张量形状": "[2, 128]"
+      },
+      "samples": [
+        {
+          "batch_shape": [
+            2,
+            128
+          ],
+          "first_row_first_20": [
+            254,
+            251,
+            21,
+            78,
+            214,
+            166,
+            21,
+            78,
+            203,
+            121,
+            21,
+            139,
+            201,
+            21,
+            238,
+            250,
+            229,
+            21,
+            139,
+            246
+          ]
+        }
+      ],
+      "tip": "GPUFLOPs 远超磁盘带宽，数据吞吐是训练的第一道瓶颈；用 Parquet 列存 + 流式读取。"
+    },
+    {
+      "id": 11,
+      "name": "训练与 Checkpoint",
+      "en": "Training & Checkpointing",
+      "input": "batch 张量",
+      "process": "forward→loss→backward→step；混合精度、梯度累积、梯度检查点",
+      "output": "checkpoint-1000/ : model.safetensors + optimizer.pt + config.json + trainer_state.json",
+      "stats": {
+        "全量微调7B权重文件": "~14 GB",
+        "LoRA适配器文件": "~30–100 MB",
+        "典型checkpoint间隔": "每 500–1000 step"
+      },
+      "samples": [
+        {
+          "checkpoint-1000/": [
+            "config.json",
+            "model.safetensors (14GB)",
+            "optimizer.pt",
+            "scheduler.pt",
+            "trainer_state.json"
+          ],
+          "trainer_state.json": {
+            "step": 1000,
+            "loss": 2.14,
+            "learning_rate": 0.00028,
+            "epoch": 0.42
+          }
+        }
+      ],
+      "tip": "checkpoint 是可恢复的训练快照；LoRA 场景只存适配器，体积是完整模型的几百分之一。"
+    },
+    {
+      "id": 12,
+      "name": "评估 (Perplexity)",
+      "en": "Evaluation",
+      "input": "held-out 留出集",
+      "process": "计算 token 级平均负对数似然，取指数得到困惑度",
+      "output": "loss 曲线 + PPL 数值",
+      "stats": {
+        "示例 loss": 2.14,
+        "示例 PPL": 8.5
+      },
+      "samples": [
+        {
+          "formula": "PPL = exp(-1/T · Σ log P(x_t | x_<t))",
+          "interpretation": "模型平均在约 8.5 个词之间犹豫；越低越好"
+        }
+      ],
+      "tip": "PPL 下降但下游任务不变，往往说明数据分布与评估目标不匹配。"
+    }
+  ],
+  "tokenizer_info": {
+    "vocab_size": 257,
+    "merge_rules": 83,
+    "special_tokens": [
+      "<PAD>",
+      "<BOS>",
+      "<EOS>",
+      "<UNK>"
+    ]
+  },
+  "raw_count": 8,
+  "safe_count": 6,
+  "total_tokens": 256
+}

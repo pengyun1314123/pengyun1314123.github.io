@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLMTune · 大模型/多模态训练全流程教学实验室</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">V</div>
+      <div><div class="brand-title">VLMTune</div><div class="brand-sub">大模型训练教学实验室</div></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group-label">开始</div>
+      <a class="nav-item active" data-section="overview"><span class="ni">◈</span> 总览首页</a>
+      <div class="nav-group-label">核心知识</div>
+      <a class="nav-item" data-section="architecture"><span class="ni">⬡</span> 架构实验室</a>
+      <a class="nav-item" data-section="pipeline"><span class="ni">⇶</span> 数据流水线</a>
+      <a class="nav-item" data-section="finetune"><span class="ni">◉</span> 微调游乐场</a>
+      <a class="nav-item" data-section="multimodal"><span class="ni">▣</span> 多模态世界</a>
+      <div class="nav-group-label">资源</div>
+      <a class="nav-item" data-section="docs"><span class="ni">▤</span> 知识文档</a>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="status-dot"></div><span id="backendStatus">后端连接中…</span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb">总览首页</div>
+      <div class="topbar-right"><span class="tag">GitHub Pages · 静态版</span><span class="tag">HTML · JS · Three.js</span></div>
+    </header>
+
+    <!-- ---------- OVERVIEW ---------- -->
+    <section class="page active" id="page-overview">
+      <div class="hero">
+        <div class="hero-text">
+          <div class="hero-badge">FROM ZERO TO LLM TRAINING</div>
+          <h1>从零学会<br><span class="grad">大模型 / 多模态</span>训练</h1>
+          <p class="hero-lead">一个面向小白的交互式实验室。跟随样例数据走完预训练与微调的每一步：看架构、算公式、读代码、观察每个阶段的输入输出产物。</p>
+          <div class="hero-actions">
+            <button class="btn primary" data-goto="pipeline">▶ 开始数据流水线之旅</button>
+            <button class="btn ghost" data-goto="architecture">探索架构 ↗</button>
+          </div>
+          <div class="hero-stats">
+            <div><b>12</b><span>流水线阶段</span></div>
+            <div><b>7</b><span>微调方法</span></div>
+            <div><b>8</b><span>样例文档</span></div>
+            <div><b>3D</b><span>可视化</span></div>
+          </div>
+        </div>
+        <div class="hero-canvas-wrap"><canvas id="heroCanvas"></canvas><div class="canvas-caption">Transformer 信息流动（3D 实时渲染）</div></div>
+      </div>
+
+      <div class="section-title"><h2>你的学习路线</h2><p>按顺序走，每一步都有对应的交互演示</p></div>
+      <div class="card-grid" id="learningPath"></div>
+
+      <div class="section-title"><h2>核心概念速览</h2><p>三个问题理解大模型训练</p></div>
+      <div class="concept-grid">
+        <div class="concept-card"><div class="cc-num">01</div><h3>模型在学什么？</h3><p>本质只有一件事：根据前文预测下一个 token。一句话里每个词都是一个训练信号，所以海量文本 = 海量练习题。</p><div class="cc-formula">P(x) = ∏ P(xₜ | x&lt;t)</div></div>
+        <div class="concept-card"><div class="cc-num">02</div><h3>微调在改什么？</h3><p>全量微调改所有权重；LoRA 只学一个低秩增量 ΔW=BA，训练完还能合并回去，推理零开销。</p><div class="cc-formula">W′ = W₀ + (α/r)·BA</div></div>
+        <div class="concept-card"><div class="cc-num">03</div><h3>多模态多了什么？</h3><p>给 LLM 加一只"眼睛"：ViT 把图像切成 patch token，投影层把它们对齐到词的语义空间，再和文本一起送进 LLM。</p><div class="cc-formula">图像 → ViT → MLP → LLM</div></div>
+      </div>
+    </section>
+
+    <!-- ---------- ARCHITECTURE ---------- -->
+    <section class="page" id="page-architecture">
+      <div class="page-head"><h1>架构实验室</h1><p>看清楚 Transformer 与注意力的内部构造，所有计算都是真实数值。</p></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>Transformer Block 3D 结构</h3><span class="hint">拖拽旋转 · 滚轮缩放</span></div>
+        <div class="split">
+          <div class="three-wrap"><canvas id="archCanvas"></canvas></div>
+          <div class="panel-body">
+            <div class="flow-list">
+              <div class="flow-item"><span class="fi-n">1</span><div><b>输入嵌入 + RoPE</b><p>token 转向量，旋转注入位置信息：f(x,m)=x·e^(imθ)</p></div></div>
+              <div class="flow-item"><span class="fi-n">2</span><div><b>多头注意力 + 因果掩码</b><p>softmax(QKᵀ/√d_k + M)·V，每个词按相关性汇总上下文</p></div></div>
+              <div class="flow-item"><span class="fi-n">3</span><div><b>残差 + RMSNorm</b><p>x + SubLayer(Norm(x))，让梯度直达深层</p></div></div>
+              <div class="flow-item"><span class="fi-n">4</span><div><b>SwiGLU 前馈网络</b><p>(Swish(xW₁) ⊙ xW₃)W₂，门控提升表达力</p></div></div>
+            </div>
+            <div class="formula-box">Attention(Q,K,V) = softmax( QK<sup>T</sup> / √d<sub>k</sub> + M ) V<br><span class="fb-note">M 为因果掩码：上三角置 −∞，保证看不到未来 token</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>注意力热力图（真实计算）</h3><span class="hint">后端 numpy 计算 softmax(QKᵀ/√d_k)</span></div>
+        <div class="panel-body"><div id="attnHeatmap" class="heatmap"></div><p class="cap" id="attnNote">加载中…</p></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>BPE 分词器演示</h3><span class="hint">在迷你语料上现场训练的 BPE</span></div>
+        <div class="panel-body">
+          <div class="input-row"><input id="tokenInput" type="text" value="大模型训练需要大量高质量文本数据。" placeholder="输入任意文本试试分词"><button class="btn primary sm" id="tokenBtn">分词 →</button></div>
+          <div id="tokenResult" class="token-result">点击按钮查看分词结果…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- PIPELINE ---------- -->
+    <section class="page" id="page-pipeline">
+      <div class="page-head"><h1>数据流水线</h1><p>跟随内置样例语料，逐步查看 12 个阶段的真实输入、处理逻辑与产物。</p></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>全流程导航</h3><span class="hint" id="pipelineMeta">加载中…</span></div>
+        <div class="panel-body"><div class="stage-strip" id="stageStrip"></div></div>
+      </div>
+
+      <div class="panel stage-panel">
+        <div class="panel-head"><h3 id="stageTitle">阶段详情</h3><span class="hint" id="stageEn"></span></div>
+        <div class="panel-body" id="stageBody"><div class="loading">加载中…</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>SFT 指令数据 · 从样本到训练文本</h3><span class="hint">Alpaca / ChatML 模板</span></div>
+        <div class="panel-body"><div class="tabs"><button class="tab active" data-sfttab="sample">原始样本</button><button class="tab" data-sfttab="rendered">套模板后（含 loss 掩码说明）</button></div><div id="sftContent" class="sft-content">加载中…</div></div>
+      </div>
+    </section>
+
+    <!-- ---------- FINE-TUNE ---------- -->
+    <section class="page" id="page-finetune">
+      <div class="page-head"><h1>微调游乐场</h1><p>调一调超参，看参数量与显存怎么变；读一读带注解的核心代码。</p></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>LoRA 参数量 / 显存计算器</h3><span class="hint">实时计算的真实数字</span></div>
+        <div class="panel-body">
+          <div class="slider-grid">
+            <label>秩 r <input type="range" id="loraR" min="4" max="64" step="4" value="16"><output id="loraRVal">16</output></label>
+            <label>缩放 α <input type="range" id="loraAlpha" min="8" max="128" step="8" value="32"><output id="loraAlphaVal">32</output></label>
+            <label>隐藏维度 d <input type="range" id="loraD" min="1024" max="8192" step="1024" value="4096"><output id="loraDVal">4096</output></label>
+            <label>层数 <input type="range" id="loraLayers" min="12" max="80" step="4" value="32"><output id="loraLayersVal">32</output></label>
+          </div>
+          <div class="metric-grid" id="loraMetrics"></div>
+          <div class="bar-chart" id="memChart"></div>
+          <p class="cap" id="loraNote"></p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>微调方法全景</h3><span class="hint">选型速查</span></div>
+        <div class="panel-body" id="methodsTable"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>核心代码注解</h3><span class="hint">LoRA 手写实现 · 逐行中文注释</span></div>
+        <div class="panel-body"><pre class="code-block"><code><span class="c"># ① 冻结原权重：优化器不会碰它</span>
+<span class="k">for</span> p <span class="k">in</span> base.parameters(): p.requires_grad = <span class="v">False</span>
+
+d, k = base.weight.shape          <span class="c"># 输出维度 / 输入维度</span>
+self.scaling = alpha / r          <span class="c"># ② 真正生效的缩放是 α/r</span>
+
+<span class="c"># ③ A 随机初始化；B 全 0 → 训练开始时增量 ΔW=0，不破坏原模型</span>
+self.A = nn.Parameter(torch.empty(r, k));  kaiming_(self.A)
+self.B = nn.Parameter(torch.zeros(d, r))
+
+<span class="k">def</span> <span class="fn">forward</span>(self, x):
+    <span class="k">return</span> base(x) + (x @ self.A.T @ self.B.T) * self.scaling
+    <span class="c">#       W₀x    +        ΔW x       → 叠加低秩增量</span>
+
+<span class="k">def</span> <span class="fn">merge</span>(self):
+    base.weight.data += self.scaling * (self.B @ self.A)
+    <span class="c"># 训练后合并回原权重 → 推理零额外延迟（LoRA 的决定性优势）</span></code></pre></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>训练过程模拟器</h3><span class="hint">loss / 学习率曲线 · checkpoint 事件</span></div>
+        <div class="panel-body">
+          <div class="sim-controls">
+            <label>方法 <select id="simMethod"><option value="lora">LoRA</option><option value="qlora">QLoRA</option><option value="full">全量微调</option></select></label>
+            <label>训练步数 <select id="simSteps"><option>100</option><option selected>200</option><option>300</option></select></label>
+            <label>数据质量 <input type="range" id="simQuality" min="40" max="100" value="85"><output id="simQualityVal">85%</output></label>
+            <button class="btn primary sm" id="simBtn">▶ 开始模拟</button>
+          </div>
+          <canvas id="lossChart" class="chart-canvas"></canvas>
+          <div class="legend"><span class="lg loss">Loss</span><span class="lg lr">Learning Rate</span><span class="lg ck">Checkpoint</span></div>
+          <div id="simResult" class="sim-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- MULTIMODAL ---------- -->
+    <section class="page" id="page-multimodal">
+      <div class="page-head"><h1>多模态世界</h1><p>图像如何变成 token 被 LLM"读懂"？看 LLaVA 式的视觉-语言架构与两阶段训练。</p></div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>视觉-语言模型架构（3D）</h3><span class="hint">拖拽旋转 · 观察图像 token 的流向</span></div>
+        <div class="split"><div class="three-wrap"><canvas id="mmCanvas"></canvas></div>
+          <div class="panel-body">
+            <div class="flow-list">
+              <div class="flow-item"><span class="fi-n">①</span><div><b>ViT 视觉编码器</b><p>图像切 P×P patch，线性投影成视觉 token：N = HW/P²</p></div></div>
+              <div class="flow-item"><span class="fi-n">②</span><div><b>MLP 投影层（对齐桥梁）</b><p>H_v = MLP(V) ∈ ℝ^(N×d_l)，把视觉特征映射到 LLM 词嵌入空间</p></div></div>
+              <div class="flow-item"><span class="fi-n">③</span><div><b>拼接 + LLM 自回归生成</b><p>图像 token 与文本 token 拼接，只对回答部分计算 loss</p></div></div>
+            </div>
+            <div class="formula-box">L = −Σ<sub>t∈回答位置</sub> log P(yₜ | y&lt;t, H_v, x)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>多模态数据流转 · 逐阶段产物</h3><span class="hint">基于 LLaVA-Instruct 风格样例</span></div>
+        <div class="panel-body"><div class="mm-flow" id="mmFlow"></div><div class="mm-sample" id="mmSample"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>LLaVA 两阶段训练</h3></div>
+        <div class="panel-body"><div class="two-stage">
+          <div class="ts-card"><div class="ts-badge s1">STAGE 1</div><h4>特征对齐</h4><p>只训练投影层，冻结 ViT 与 LLM。数据：CC3M 图文对约 59.5 万。</p><div class="ts-out">产物 → 对齐好的 Projector</div></div>
+          <div class="ts-arrow">→</div>
+          <div class="ts-card"><div class="ts-badge s2">STAGE 2</div><h4>端到端指令微调</h4><p>训练投影层 + LLM（可加 LoRA）。数据：158K 多模态指令（对话58K/描述23K/推理77K）。</p><div class="ts-out">产物 → 会看图聊天的多模态助手</div></div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ---------- DOCS ---------- -->
+    <section class="page" id="page-docs">
+      <div class="page-head"><h1>知识文档</h1><p>配合交互页面阅读的系统化文档，含全部核心公式与代码注解。</p></div>
+      <div class="doc-grid" id="docGrid"></div>
+      <div class="panel">
+        <div class="panel-head"><h3>小白学习路线（建议顺序）</h3></div>
+        <div class="panel-body"><ol class="roadmap">
+          <li><b>总览首页</b> — 建立"预测下一个词"的核心直觉</li>
+          <li><b>架构实验室</b> — 看 Transformer 3D 结构与注意力热力图，理解 Q/K/V</li>
+          <li><b>数据流水线</b> — 跟着 8 篇脏数据走完 12 道清洗/加工工序，看每步产物</li>
+          <li><b>微调游乐场</b> — 调 LoRA 的 r/α，读带注解代码，看 loss 曲线与 checkpoint</li>
+          <li><b>多模态世界</b> — 理解 ViT + 投影层 + LLM 的对齐与两阶段训练</li>
+          <li><b>阅读文档</b> — 用 01/02/03 三篇文档把知识点串成体系</li>
+        </ol></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="vendor/three.min.js"></script>
+<script src="js/visuals.js"></script>
+<script src="js/static-api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

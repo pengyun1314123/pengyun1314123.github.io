@@ -1,0 +1,69 @@
+{
+  "sample": {
+    "id": "mm-001",
+    "image": "images/cat_on_sofa.jpg",
+    "image_meta": {
+      "size": "512x512",
+      "patch_size": 14,
+      "num_patches": 1369
+    },
+    "conversations": [
+      {
+        "from": "human",
+        "value": "<image>\n图里有什么？"
+      },
+      {
+        "from": "gpt",
+        "value": "一只橘猫趴在米色的沙发上。"
+      },
+      {
+        "from": "human",
+        "value": "它在做什么？"
+      },
+      {
+        "from": "gpt",
+        "value": "它正闭着眼睛睡觉，看起来非常放松。"
+      },
+      {
+        "from": "human",
+        "value": "这张照片是在什么环境下拍的？"
+      },
+      {
+        "from": "gpt",
+        "value": "从柔和的光线和室内陈设看，这应该是在家里的客厅拍摄的。"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "stage": "① 图像输入",
+      "artifact": "images/cat_on_sofa.jpg  (512x512)",
+      "shape": "[3, 512, 512]"
+    },
+    {
+      "stage": "② ViT 切 Patch",
+      "artifact": "patch_size=14 → 1369 个 patch token",
+      "shape": "[1369, 3, 14, 14]"
+    },
+    {
+      "stage": "③ 视觉特征",
+      "artifact": "ViT 输出图像特征 V",
+      "shape": "[1369, 1024]"
+    },
+    {
+      "stage": "④ 投影对齐",
+      "artifact": "MLP Projector → H_v（映射到 LLM 词嵌入维度）",
+      "shape": "[1369, 4096]"
+    },
+    {
+      "stage": "⑤ 序列拼接",
+      "artifact": "图像 token + <image> 位置的文本 token 拼接",
+      "shape": "[N+M, 4096]"
+    },
+    {
+      "stage": "⑥ 指令微调",
+      "artifact": "只对 assistant 回答位置计算 loss",
+      "shape": "labels: 图像与prompt段 = -100"
+    }
+  ]
+}

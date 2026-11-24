@@ -1,0 +1,100 @@
+{
+  "methods": [
+    {
+      "name": "全量微调",
+      "en": "Full FT",
+      "params": "100%",
+      "latency": "无",
+      "memory": "极高 (~84GB/7B)",
+      "pros": "效果上限最高",
+      "cons": "显存巨大、灾难性遗忘、每任务存整模型",
+      "use": "算力充足、追求极致"
+    },
+    {
+      "name": "LoRA",
+      "en": "LoRA",
+      "params": "0.1–1%",
+      "latency": "零（可合并）",
+      "memory": "低 (~18GB/7B)",
+      "pros": "效果接近全量、零推理延迟、适配器仅几十MB",
+      "cons": "需调 r/α/target",
+      "use": "★ 默认首选"
+    },
+    {
+      "name": "QLoRA",
+      "en": "QLoRA",
+      "params": "0.1–1%",
+      "latency": "零（可合并）",
+      "memory": "极低 (~6GB/7B)",
+      "pros": "4bit 存储+NF4+双重量化，单卡微调 65B",
+      "cons": "训练略慢、量化有轻微损失",
+      "use": "★ 资源受限"
+    },
+    {
+      "name": "Adapter",
+      "en": "Adapter",
+      "params": "0.5–5%",
+      "latency": "有（不可合并）",
+      "memory": "低",
+      "pros": "多任务热切换方便",
+      "cons": "推理变慢、无法合并",
+      "use": "多任务服务"
+    },
+    {
+      "name": "Prompt Tuning",
+      "en": "Prompt",
+      "params": "<0.01%",
+      "latency": "无",
+      "memory": "极低",
+      "pros": "参数极少、实现简单",
+      "cons": "小模型效果差、占上下文",
+      "use": "11B+ 模型简单任务"
+    },
+    {
+      "name": "Prefix / P-Tuning v2",
+      "en": "Prefix",
+      "params": "0.1–1%",
+      "latency": "略占上下文",
+      "memory": "低",
+      "pros": "表达力强、训练稳定(v2)",
+      "cons": "占上下文窗口",
+      "use": "NLP 理解类任务"
+    },
+    {
+      "name": "RLHF / DPO",
+      "en": "Alignment",
+      "params": "取决于底座",
+      "latency": "无",
+      "memory": "中–高",
+      "pros": "对齐人类偏好，DPO 更简单",
+      "cons": "RLHF 复杂易崩",
+      "use": "聊天助手对齐"
+    }
+  ],
+  "tips": [
+    {
+      "name": "混合精度 BF16",
+      "desc": "前向计算减半显存并提速，优化器状态仍保留 FP32 保证稳定"
+    },
+    {
+      "name": "梯度累积",
+      "desc": "loss / accum_steps，用多个小 batch 模拟大 batch"
+    },
+    {
+      "name": "梯度检查点",
+      "desc": "不存中间激活、反向时重算：显存↓30%，速度↓20%"
+    },
+    {
+      "name": "Warmup + Cosine LR",
+      "desc": "先线性升到峰值再余弦衰减，避免初期梯度爆炸"
+    },
+    {
+      "name": "梯度裁剪 clip=1.0",
+      "desc": "防止偶发大梯度破坏训练"
+    },
+    {
+      "name": "Flash Attention",
+      "desc": "精确注意力的 IO 感知实现，长序列显著提速"
+    }
+  ]
+}

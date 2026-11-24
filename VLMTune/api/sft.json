@@ -1,0 +1,59 @@
+{
+  "samples": [
+    {
+      "id": "sft-001",
+      "instruction": "把下面的话改写成礼貌用语",
+      "input": "给我水",
+      "output": "请给我一杯水，谢谢。"
+    },
+    {
+      "id": "sft-002",
+      "instruction": "解释什么是过拟合",
+      "input": "",
+      "output": "过拟合是指模型在训练数据上表现很好，但在没见过的新数据上表现变差的现象。通常是模型记住了训练集的噪声而不是学到通用规律，可以通过增加数据、正则化或早停来缓解。"
+    },
+    {
+      "id": "sft-003",
+      "instruction": "将下列中文翻译成英文",
+      "input": "大模型需要大量数据进行预训练。",
+      "output": "Large language models require massive amounts of data for pretraining."
+    },
+    {
+      "id": "sft-004",
+      "instruction": "用一句话总结LoRA的核心思想",
+      "input": "",
+      "output": "LoRA 通过冻结原模型权重、只训练两个低秩矩阵相乘来近似权重更新，从而用极少的参数实现高效微调。"
+    }
+  ],
+  "rendered": [
+    {
+      "id": "sft-001",
+      "instruction": "把下面的话改写成礼貌用语",
+      "input": "给我水",
+      "output": "请给我一杯水，谢谢。",
+      "rendered": "<|im_start|>system\n你是一个有帮助的助手。<|im_end|>\n<|im_start|>user\n把下面的话改写成礼貌用语\n给我水<|im_end|>\n<|im_start|>assistant\n请给我一杯水，谢谢。<|im_end|>"
+    },
+    {
+      "id": "sft-002",
+      "instruction": "解释什么是过拟合",
+      "input": "",
+      "output": "过拟合是指模型在训练数据上表现很好，但在没见过的新数据上表现变差的现象。通常是模型记住了训练集的噪声而不是学到通用规律，可以通过增加数据、正则化或早停来缓解。",
+      "rendered": "<|im_start|>system\n你是一个有帮助的助手。<|im_end|>\n<|im_start|>user\n解释什么是过拟合\n（无额外输入）<|im_end|>\n<|im_start|>assistant\n过拟合是指模型在训练数据上表现很好，但在没见过的新数据上表现变差的现象。通常是模型记住了训练集的噪声而不是学到通用规律，可以通过增加数据、正则化或早停来缓解。<|im_end|>"
+    },
+    {
+      "id": "sft-003",
+      "instruction": "将下列中文翻译成英文",
+      "input": "大模型需要大量数据进行预训练。",
+      "output": "Large language models require massive amounts of data for pretraining.",
+      "rendered": "<|im_start|>system\n你是一个有帮助的助手。<|im_end|>\n<|im_start|>user\n将下列中文翻译成英文\n大模型需要大量数据进行预训练。<|im_end|>\n<|im_start|>assistant\nLarge language models require massive amounts of data for pretraining.<|im_end|>"
+    },
+    {
+      "id": "sft-004",
+      "instruction": "用一句话总结LoRA的核心思想",
+      "input": "",
+      "output": "LoRA 通过冻结原模型权重、只训练两个低秩矩阵相乘来近似权重更新，从而用极少的参数实现高效微调。",
+      "rendered": "<|im_start|>system\n你是一个有帮助的助手。<|im_end|>\n<|im_start|>user\n用一句话总结LoRA的核心思想\n（无额外输入）<|im_end|>\n<|im_start|>assistant\nLoRA 通过冻结原模型权重、只训练两个低秩矩阵相乘来近似权重更新，从而用极少的参数实现高效微调。<|im_end|>"
+    }
+  ],
+  "note": "训练时只对 assistant 段计算 loss，模板与 user 段 labels=-100。"
+}
