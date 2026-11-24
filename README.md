@@ -13,7 +13,7 @@
 [![PyTorch](assets/badges/pytorch.svg)](https://pytorch.org/)
 [![Location: Beijing](assets/badges/location.svg)](https://github.com/pengyun1314123)
 
-[关于我](#关于我) · [个人优势](#个人优势) · [AIGC 生成能力](#aigc-生成能力) · [能力矩阵](#能力矩阵) · [工作经历](#工作经历) · [教学实验室](https://pengyun1314123.github.io/VLMTune/) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
+[关于我](#关于我) · [个人优势](#个人优势) · [AIGC 生成能力](#aigc-生成能力) · [能力矩阵](#能力矩阵) · [工作经历](#工作经历) · <a href="https://pengyun1314123.github.io/VLMTune/" style="color:#d97706;font-weight:600">🟠 教学实验室</a> · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
 
 ---
 
@@ -137,7 +137,7 @@ AIGC 是我这两年的主线之一。我关注的不是单点效果，而是**�
 
 我把大模型训练的核心知识点做成了一个**可以直接在浏览器里打开、无需部署**的交互式教学工程，面向想从零搞懂 LLM / 多模态训练的人。点开链接即可体验，配有真实运行的样例数据与计算，而不是静态示意图。
 
-> 🔗 **在线体验**：[pengyun1314123.github.io/VLMTune](https://pengyun1314123.github.io/VLMTune/) ｜ 源码：[github.com/pengyun1314123/VLMTune](https://github.com/pengyun1314123/VLMTune)
+> 🟠 **在线体验（点开即用）**：<a href="https://pengyun1314123.github.io/VLMTune/" style="color:#d97706;font-weight:600;font-size:1.05em">pengyun1314123.github.io/VLMTune</a> ｜ 源码：[github.com/pengyun1314123/VLMTune](https://github.com/pengyun1314123/VLMTune)
 
 | 板块 | 内容 |
 | --- | --- |
@@ -149,6 +149,8 @@ AIGC 是我这两年的主线之一。我关注的不是单点效果，而是**�
 | 知识文档 | 三篇系统化文档：架构与核心公式、微调原理与代码注解、数据全流程 |
 
 主要覆盖：预训练目标（CLM / MLM）、数据清洗 / 去重 / PII / 去污染、BPE、注意力 / RoPE / GQA、LoRA / QLoRA / Adapter / Prefix / DPO、ViT 视觉 token 对齐等。技术栈为 Python Flask 后端 + HTML / JS / Three.js 前端，线上版本已静态化托管在 GitHub Pages。
+
+> 这个项目我还会**持续增加更多功能和教学内容**，欢迎到 <a href="https://github.com/pengyun1314123/VLMTune" style="color:#d97706;font-weight:600">github.com/pengyun1314123/VLMTune</a> 点个 **Star ⭐** 跟踪后续更新，也欢迎提 Issue 交流。
 
 ## 关注方向与技术雷达
 
