@@ -13,7 +13,7 @@
 [![PyTorch](assets/badges/pytorch.svg)](https://pytorch.org/)
 [![Location: Beijing](assets/badges/location.svg)](https://github.com/pengyun1314123)
 
-[关于我](#关于我) · [个人优势](#个人优势) · [AIGC 生成能力](#aigc-生成能力) · [能力矩阵](#能力矩阵) · [工作经历](#工作经历) · [技术栈](#技术栈) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
+[关于我](#关于我) · [个人优势](#个人优势) · [AIGC 生成能力](#aigc-生成能力) · [能力矩阵](#能力矩阵) · [工作经历](#工作经历) · [教学实验室](https://pengyun1314123.github.io/VLMTune/) · [代表系统](#代表系统数字人实时交互链路) · [关注方向](#关注方向与技术雷达) · [联系](#联系)
 
 ---
 
@@ -132,6 +132,23 @@ AIGC 是我这两年的主线之一。我关注的不是单点效果，而是**�
 ![数字人实时交互链路](assets/diagrams/digital-human-pipeline.svg)
 
 这个链路里最值得投入的地方，是把**音频、表情、动作、渲染**四条时间线对齐——也就是上面的 `ArrangePrepare` 那一步；它决定了数字人是「能说话的贴图」还是「可信的角色」。
+
+## 交互教学实验室 · VLMTune
+
+我把大模型训练的核心知识点做成了一个**可以直接在浏览器里打开、无需部署**的交互式教学工程，面向想从零搞懂 LLM / 多模态训练的人。点开链接即可体验，配有真实运行的样例数据与计算，而不是静态示意图。
+
+> 🔗 **在线体验**：[pengyun1314123.github.io/VLMTune](https://pengyun1314123.github.io/VLMTune/) ｜ 源码：[github.com/pengyun1314123/VLMTune](https://github.com/pengyun1314123/VLMTune)
+
+| 板块 | 内容 |
+| --- | --- |
+| 总览首页 | 学习路线、核心概念速览、Transformer 信息流 3D 可视化 |
+| 架构实验室 | Transformer Block 3D 结构、numpy 真实计算的注意力热力图、迷你 BPE 分词演示 |
+| 数据流水线 | 8 篇埋了脏数据的样例语料走完 12 道工序，逐步展示每阶段真实输入 / 产物、SFT 模板 |
+| 微调游乐场 | LoRA 参数量与显存实时计算器、7 种微调方法对比、带注解核心代码、训练 loss 曲线模拟 |
+| 多模态世界 | ViT + 投影层 + LLM 架构 3D 可视化、图像 token 逐阶段产物、LLaVA 两阶段训练 |
+| 知识文档 | 三篇系统化文档：架构与核心公式、微调原理与代码注解、数据全流程 |
+
+主要覆盖：预训练目标（CLM / MLM）、数据清洗 / 去重 / PII / 去污染、BPE、注意力 / RoPE / GQA、LoRA / QLoRA / Adapter / Prefix / DPO、ViT 视觉 token 对齐等。技术栈为 Python Flask 后端 + HTML / JS / Three.js 前端，线上版本已静态化托管在 GitHub Pages。
 
 ## 关注方向与技术雷达
 
